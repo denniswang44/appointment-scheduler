@@ -10,7 +10,7 @@ def get_appointments():
     if (get_request_malformed(request)):
         return Response("{'error':'user id missing or malformed'}", status=400, mimetype='application/json')
     db = get_db()
-    user_id = request.args['user_id']
+    user_id = int(request.args['user_id'])
     appointments = []
     rows = db.execute(
         'SELECT appointment_date, appointment_time '
@@ -30,15 +30,17 @@ def get_appointments():
     }
 
 def get_request_malformed(request):
-    return 'user_id' not in request.args
+    return ('user_id' not in request.args 
+    or not request.args['user_id'].isdigit() 
+    or int(request.args['user_id']) <= 0)
 
 @bp.route('/create', methods=['POST'])
 def create_appointment():
     if (post_request_malformed(request)):
         return Response("{'error':'post request inputs malformed'}", status=400, mimetype='application/json')
     db = get_db()
-    user_id = request.json['user_id']
-    appointment_datetime = datetime.datetime.fromtimestamp(request.json['datetime'])
+    user_id = int(request.json['user_id'])
+    appointment_datetime = datetime.datetime.fromtimestamp(int(request.json['datetime']))
     appointment_date = appointment_datetime.strftime('%Y-%m-%d')
     appointment_time = appointment_datetime.strftime('%H:%M')
     if (not check_no_appointment_on_date(db, user_id, appointment_date)):
@@ -59,9 +61,15 @@ def create_appointment():
     }
 
 def post_request_malformed(request):
-    if ('user_id' not in request.json or 'datetime' not in request.json):
+    if (not request.is_json or 'user_id' not in request.json or 'datetime' not in request.json):
         return True
-    return False
+    user_id = request.json['user_id']
+    datetime = request.json['datetime']
+    user_id_valid = (isinstance(user_id, int) or (isinstance(user_id, str) and user_id.isdigit())) and int(user_id) > 0
+    datetime_valid = isinstance(datetime, int) or (isinstance(datetime, str) and datetime.isdigit())
+    if (user_id_valid and datetime_valid):
+        return False
+    return True
 
 def check_no_appointment_on_date(db, user_id, appointment_date):
     existing_appointment_num = db.execute(
