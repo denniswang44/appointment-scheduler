@@ -17,6 +17,8 @@ def get_appointments():
         'FROM appointment WHERE user_id = (?)',
         (user_id,),
     ).fetchall()
+
+    """Deconstruct Row type into JSON map"""
     for row in rows:
         appointments.append(
             {
@@ -30,6 +32,7 @@ def get_appointments():
     }
 
 def get_request_malformed(request):
+    """Check that User ID exists in the query parameters and is expected format"""
     return ('user_id' not in request.args 
     or not request.args['user_id'].isdigit() 
     or int(request.args['user_id']) <= 0)
@@ -40,6 +43,8 @@ def create_appointment():
         return Response("{'error':'post request inputs malformed'}", status=400, mimetype='application/json')
     db = get_db()
     user_id = int(request.json['user_id'])
+
+    """Parse datetime into separate components for date and time"""
     appointment_datetime = datetime.datetime.fromtimestamp(int(request.json['datetime']))
     appointment_date = appointment_datetime.strftime('%Y-%m-%d')
     appointment_time = appointment_datetime.strftime('%H:%M')
@@ -61,10 +66,13 @@ def create_appointment():
     }
 
 def post_request_malformed(request):
+    """Check that request type and inputs are as expected"""
     if (not request.is_json or 'user_id' not in request.json or 'datetime' not in request.json):
         return True
     user_id = request.json['user_id']
     datetime = request.json['datetime']
+
+    """Check that User ID and DateTime are valid inputs"""
     user_id_valid = (isinstance(user_id, int) or (isinstance(user_id, str) and user_id.isdigit())) and int(user_id) > 0
     datetime_valid = isinstance(datetime, int) or (isinstance(datetime, str) and datetime.isdigit())
     if (user_id_valid and datetime_valid):

@@ -16,7 +16,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    """Register command to initialize the DB and ask app to close connection upon app closure"""
     db.init_app(app)
+
+    """Register commands to create and get appointments"""
     app.register_blueprint(appointment.bp)
 
     return app
