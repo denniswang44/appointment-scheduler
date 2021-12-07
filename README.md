@@ -17,9 +17,14 @@ Appointments are created with a POST request with a JSON input.
 It supports JSON input in the following format:
 ```
 {
-    "user_id": int,
-    "datetime" int,
+    "user_id": int // Any positive integer
+    "datetime": int // A unix timestamp
 }
 ```
 
 Example query: `curl -i -X POST -H 'Content-Type: application/json' -d '{"user_id": 345, "datetime": 1638337678}' http://127.0.0.1:5000/create`
+
+### Getting Appointments
+Appointments can be fetched for any particular user with a GET request. The `user_id` can be any positive integer and is passed in as a query parameter.
+
+Example query : `curl -i -X GET http://localhost:5000/appointments?user_id=345`
