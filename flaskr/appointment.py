@@ -13,7 +13,7 @@ def get_appointments():
     user_id = int(request.args['user_id'])
     appointments = []
     rows = db.execute(
-        'SELECT appointment_date, appointment_time '
+        'SELECT appointment_date, start_time, end_time '
         'FROM appointment WHERE user_id = (?)',
         (user_id,),
     ).fetchall()
@@ -23,7 +23,8 @@ def get_appointments():
         appointments.append(
             {
                 "date": row["appointment_date"],
-                "time": row["appointment_time"],
+                "start_time": row["start_time"],
+                "end_time": row["end_time"],
             }
         )
     return {
@@ -47,21 +48,23 @@ def create_appointment():
     """Parse datetime into separate components for date and time"""
     appointment_datetime = datetime.datetime.fromtimestamp(int(request.json['datetime']))
     appointment_date = appointment_datetime.strftime('%Y-%m-%d')
-    appointment_time = appointment_datetime.strftime('%H:%M')
     if (not check_no_appointment_on_date(db, user_id, appointment_date)):
         return Response("{'error':'user already has appointment that day'}", status=400, mimetype='application/json')
     if (not check_appointment_time_on_half_hour(appointment_datetime)):
         return Response("{'error':'appointment start time not available'}", status=400, mimetype='application/json')
+    start_time = appointment_datetime.strftime('%H:%M')
+    end_time = (appointment_datetime + datetime.timedelta(minutes=30)).strftime('%H:%M')
     db.execute(
-        "INSERT INTO appointment (user_id, appointment_date, appointment_time) VALUES (?, ?, ?)",
-        (user_id, appointment_date, appointment_time),
+        "INSERT INTO appointment (user_id, appointment_date, start_time, end_time) VALUES (?, ?, ?, ?)",
+        (user_id, appointment_date, start_time, end_time),
     ).fetchone()
     db.commit()
     return {
         "user_id": user_id,
         "appointment": {
             "date": appointment_date,
-            "time": appointment_time
+            "start_time": start_time,
+            "end_time": end_time
         }
     }
 

@@ -22,7 +22,7 @@ It supports JSON input in the following format:
 }
 ```
 
-Example query: `curl -i -X POST -H 'Content-Type: application/json' -d '{"user_id": 345, "datetime": 1638337678}' http://127.0.0.1:5000/create`
+Example query: `curl -i -X POST -H 'Content-Type: application/json' -d '{"user_id": 345, "datetime": 1638736207}' http://127.0.0.1:5000/create`
 
 ### Getting Appointments
 Appointments can be fetched for any particular user with a GET request. The `user_id` can be any positive integer and is passed in as a query parameter.
