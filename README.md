@@ -28,3 +28,7 @@ Example query: `curl -i -X POST -H 'Content-Type: application/json' -d '{"user_i
 Appointments can be fetched for any particular user with a GET request. The `user_id` can be any positive integer and is passed in as a query parameter.
 
 Example query : `curl -i -X GET http://localhost:5000/appointments?user_id=345`
+
+## Future To-Do's
+
+With more time, I'd add some unit tests for this HTTP server to check the happy path as well as potential edge cases.
