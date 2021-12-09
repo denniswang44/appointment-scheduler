@@ -1,11 +1,11 @@
-# Maven Clinic Take Home
+# Appointment Scheduler
 
 This is a basic appointment booking system with get and create capability. Each user can book at most one appointment per day at any time on the hour or half hour.
 
 ## How to Run
 From the base folder of the project and with docker started run:
-1. `sudo docker build --tag maven-take-home .`
-2. `sudo docker run --name maven-take-home -p 5000:5000 maven-take-home`
+1. `sudo docker build --tag appointment-scheduler .`
+2. `sudo docker run --name appointment-scheduler -p 5000:5000 appointment-scheduler`
 
 Commands can then be run in the Docker CLI that can be accessed from the **Containers** section of the Docker dashboard.
 
